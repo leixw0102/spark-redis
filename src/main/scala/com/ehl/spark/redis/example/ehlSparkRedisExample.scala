@@ -14,7 +14,6 @@ import org.apache.spark.{SparkConf, SparkContext}
  */
 
 import com.ehl.spark.redis._
-import com.ehl.spark.redis.rdd._
 
 /**
  * read : sc.fromRedis*

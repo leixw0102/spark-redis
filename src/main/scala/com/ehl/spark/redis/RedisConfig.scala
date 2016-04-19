@@ -93,8 +93,8 @@ class RedisConfig(val initialHost: RedisEndpoint) extends  Serializable {
 
   val initialAddr = initialHost.host
 
-  val hosts = getHosts(initialHost)
-  val nodes = getNodes(initialHost)
+  val hosts = getHosts()
+  val nodes = getNodes()
   /**
     * @return initialHost's auth
     */
@@ -163,11 +163,10 @@ class RedisConfig(val initialHost: RedisEndpoint) extends  Serializable {
 
 
   /**
-    * @param initialHost any redis endpoint of a cluster or a single server
     * @return list of host nodes
     */
-  private def getHosts(initialHost: RedisEndpoint): Array[RedisNode] = {
-    getNodes(initialHost).filter(_.idx == 0)
+  private def getHosts(): Array[RedisNode] = {
+    getNodes().filter(_.idx == 0)
   }
 
   /**
@@ -247,10 +246,10 @@ class RedisConfig(val initialHost: RedisEndpoint) extends  Serializable {
   }
 
   /**
-    * @param initialHost any redis endpoint of a cluster or a single server
+
     * @return list of nodes
     */
-  def getNodes(initialHost: RedisEndpoint): Array[RedisNode] = {
+  def getNodes(): Array[RedisNode] = {
     if (clusterEnabled(initialHost)) {
       getClusterNodes(initialHost)
     } else {

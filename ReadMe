@@ -1,0 +1,20 @@
+1.redis 参数与配置
+  val sc = new SparkContext(new SparkConf().setMaster("local")
+    .setAppName("redis")
+    .set("redis.host","10.150.27.210")
+    .set("redis.port","6379")
+    .set("redis.db","3")
+    .set("redis.auth","")
+2.如何引入
+   在自己项目中引入maven配置项
+3.如何使用
+   import com.ehl.spark.redis._
+   引入上述后可以使用
+4.函数规则
+  前提：需要使用implicit val redisConfig=new RedisConfig(new RedisEndpoint(sc.getConf))
+  读函数：fromRedis
+  写函数：toRedis
+  删除keys:toRedisFixedList
+
+5.例子见
+  com.ehl.spark.redis.example

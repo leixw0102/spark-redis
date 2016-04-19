@@ -2,7 +2,7 @@ package com.ehl.spark.redis.rdd
 
 import com.ehl.spark.redis.RedisConfig
 import org.apache.spark.rdd.RDD
-
+import scala.collection.JavaConversions._
 /**
  * rdd of values
  * @param rdd
@@ -26,7 +26,6 @@ class Redis2Function(rdd:RDD[String])(implicit redisConfig: RedisConfig) extends
 
   }
 
-
   /**
    *
    * @param listName  target list's name which hold all the vs
@@ -45,6 +44,17 @@ class Redis2Function(rdd:RDD[String])(implicit redisConfig: RedisConfig) extends
 
   }
 
+  def delRedisKeys(): Unit ={
+    rdd.foreachPartition(partition=>
+      partition.map(kv => (redisConfig.getHost(kv), kv)).toArray.groupBy(_._1).
+        mapValues(a => a.map(p => p._2)).foreach {
+        x => {
+          val conn = x._1.endpoint.connect()
+          x._2.foreach(x=>conn.del(x))
+          conn.close
+        }
+      })
+  }
   /**
    *
    * @param key
@@ -74,7 +84,7 @@ class RedisKV2Function(rdd:RDD[(String,String)])(implicit redisConfig: RedisConf
   /**
    * @param ttl time to live
    */
-  def toRedisKVs( ttl: Int){
+  def toRedisKVs( ttl: Int=0){
     rdd.foreachPartition(partition=>
       partition.map(kv => (redisConfig.getHost(kv._1), kv)).toArray.groupBy(_._1).
       mapValues(a => a.map(p => p._2)).foreach {
